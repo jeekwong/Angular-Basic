@@ -263,5 +263,315 @@ Attribute 绑定的语法类似于 Property 绑定，但其括号之间不是元
 
 ##### 样式绑定
 
-#### //todo 事件绑定
+#### 事件绑定
+
+Angular 的事件绑定语法由等号左侧带圆括号的目标事件和右侧引号中的模板语句组成。 
+
+##### 目标事件
+
+```
+<button (click)="onSave($event)">Save</button>
+```
+
+带 `on-` 前缀的备选形式，称之为**规范形式**：
+
+```
+<button on-click="onSave($event)">on-click Save</button>
+```
+
+元素事件可能是更常见的目标，但 Angular 会先看这个名字是否能匹配上已知指令的事件属性:
+
+```
+<h4>myClick is an event on the custom ClickDirective:</h4>
+<button (myClick)="clickMessage=$event" clickable>click with myClick</button>
+{{clickMessage}}
+```
+
+##### $event 和事件处理语句
+
+绑定会通过名叫 `$event` 的事件对象传递关于此事件的信息（包括数据值）。
+
+事件对象的形态取决于目标事件。如果目标事件是原生 DOM 元素事件， `$event` 就是 DOM 事件对象，它有像 `target` 和 `target.value` 这样的属性。
+
+```
+<input [value]="currentItem.name"
+       (input)="currentItem.name=$event.target.value" >
+without NgModel
+```
+
+##### 使用 EventEmitter 实现自定义事件
+
+通常，指令使用 Angular `EventEmitter` 来触发自定义事件。 指令创建一个 `EventEmitter` 实例，并且把它作为属性暴露出来。 指令调用 `EventEmitter.emit(payload)` 来触发事件，可以传入任何东西作为消息载荷。 父指令通过绑定到这个属性来监听事件，并通过 `$event` 对象来访问载荷。
+
+#### 双向绑定 [(...)]
+
+##### 双向绑定的基础知识
+
+双向绑定会做两件事：
+
+* 设置特定的元素属性
+* 监听元素的变更事件
+
+`[()]` 语法很容易想明白：该元素具有名为 `x` 的可设置属性和名为 `xChange` 的相应事件。
+
+双向绑定语法实际上是属性绑定和事件绑定的语法糖。
+
+##### 表单中的双向绑定
+
+#### 内置指令
+
+Angular 提供了两种内置指令：属性型指令和结构型指令。
+
+**内置属性型指令**
+
+属性型指令会监听并修改其它 HTML 元素和组件的行为、Attribute 和 Property。
+
+* NgClass —— 添加和删除一组 CSS 类
+* NgStyle —— 添加和删除一组 HTML 样式
+* NgModel —— 将数据双向绑定添加到 HTML 表单元素
+
+通过分别绑定到 `<input>` 元素的 `value` 属性和 `input` 事件，可以达到同样的效果：
+
+```
+<label for="without">without NgModel:</label>
+<input [value]="currentItem.name" (input)="currentItem.name=$event.target.value" id="without">
+```
+
+为了简化语法，`ngModel` 指令把技术细节隐藏在其输入属性 `ngModel` 和输出属性 `ngModelChange` 的后面：
+
+```
+<label for="example-change">(ngModelChange)="...name=$event":</label>
+<input [ngModel]="currentItem.name" (ngModelChange)="currentItem.name=$event" id="example-change">
+```
+
+单独的 ngModel 绑定是对绑定到元素的原生属性方式的一种改进，但你可以使用 `[(ngModel)]` 语法来通过单个声明简化绑定：
+
+```
+<label for="example-ngModel">[(ngModel)]:</label>
+<input [(ngModel)]="currentItem.name" id="example-ngModel">
+```
+
+此 `[(ngModel)]` 语法只能设置数据绑定属性。如果你要做得更多，可以编写扩展表单。例如，下面的代码将 `<input>` 值更改为大写：
+
+```
+<input [ngModel]="currentItem.name" (ngModelChange)="setUppercaseName($event)" id="example-uppercase">
+```
+
+**内置结构型指令**
+
+结构型指令的职责是 HTML 布局。 它们塑造或重塑 DOM 的结构，这通常是通过添加、移除和操纵它们所附加到的宿主元素来实现的。
+
+* NgIf —— 从模板中创建或销毁子视图
+* NgFor —— 为列表中的每个条目重复渲染一个节点
+* NgSwitch —— 一组在备用视图之间切换的指令
+
+#### 模板引用变量（ #var ）
+
+使用井号（`#`）声明模板引用变量。
+
+```
+<input #phone placeholder="phone number" />
+```
+
+可以在组件模板中的任何位置引用模板引用变量。
+
+```
+<input #phone placeholder="phone number" />
+
+<!-- lots of other elements -->
+
+<!-- phone refers to the input element; pass its `value` to an event handler -->
+<button (click)="callPhone(phone.value)">Call</button>
+```
+
+也可以用 `ref-` 前缀代替 `#`。
+
+#### 输入和输出属性
+
+`@Input()` 和 `@Output()` 允许 Angular 在其父上下文和子指令或组件之间共享数据。`@Input()` 属性是可写的，而 `@Output()` 属性是可观察对象。
+
+##### 如何使用 `@Input()`
+
+在子组件中
+
+要在子组件类中使用 `@Input()` 装饰器，首先导入 `Input`，然后使用 `@Input()` 来装饰一个属性：
+
+```
+import { Component, Input } from '@angular/core'; // First, import Input
+export class ItemDetailComponent {
+  @Input() item: string; // decorate the property with @Input()
+}
+```
+
+在父组件中
+
+在父组件的模板中绑定该属性。
+
+首先，使用子组件的选择器作为父组件模板中的指令。然后，使用属性绑定将子组件中的属性绑定到父组件中的属性。
+
+```
+<app-item-detail [item]="currentItem"></app-item-detail>
+```
+
+接下来，在父组件类 `app.component.ts` 中，为 `currentItem` 指定一个值：
+
+```
+export class AppComponent {
+  currentItem = 'Television';
+}
+```
+
+方括号 `[] `中的目标是子组件中带有 `@Input()` 装饰器的属性。绑定源（等号右边的部分）是父组件要传给内嵌组件的数据。
+
+关键是，当要在父组件中绑定到子组件中的属性（即方括号中的内容）时，必须在子组件中使用 `@Input()` 来装饰该属性。
+
+##### 如何使用 `@Output()`
+
+在子组件或指令中使用 `@Output()`装饰器，允许数据从子级流出到父级。
+
+通常应将 `@Output()` 属性初始化为 Angular `EventEmitter`，并将值作为事件从组件中向外流出。
+
+像 `@Input()` 一样，也要在子组件的属性上使用 `@Output()`，但其类型为 `EventEmitter`。
+
+`@Output()`将子组件中的属性标记为一扇门，数据可以通过这扇门从子组件传到父组件。 然后，子组件必须引发一个事件，以便父组件知道发生了某些变化。为了引发事件，`@Output()`要和 `EventEmitter` **配合使用**，`EventEmitter` 是 `@angular/core` 中的一个类，用于发出自定义事件。
+
+在子组件中
+
+首先，确保在子组件类中导入 `Output` 和 `EventEmitter` ：
+
+```
+import { Output, EventEmitter } from '@angular/core';
+```
+
+接下来，仍然在子组件中，使用组件类中的 `@Output()` 装饰属性。下面例子中的 `@Output()` 名叫 `newItemEvent`，其类型是 `EventEmitter`，这表示它是一个事件。
+
+```
+@Output() newItemEvent = new EventEmitter<string>();
+```
+
+接下来，在同一个组件类中创建一个 `addNewItem()` 方法：
+
+```
+export class ItemOutputComponent {
+
+  @Output() newItemEvent = new EventEmitter<string>();
+
+  addNewItem(value: string) {
+    this.newItemEvent.emit(value);
+  }
+}
+```
+
+`addNewItem()` 函数使用 `@Output()` `newItemEvent` 引发一个事件。
+
+```
+<label>Add an item: <input #newItem></label>
+<button (click)="addNewItem(newItem.value)">Add to parent's list</button>
+```
+
+在父组件中
+
+在父组件的模板中，将父组件的方法绑定到子组件的事件。
+
+```
+<app-item-output (newItemEvent)="addItem($event)"></app-item-output>
+```
+
+事件绑定 `(newItemEvent)='addItem($event)'` 告诉 Angular 将子组件的 `newItemEvent` 事件连接到父组件中的方法 `addItem()`，以及将子组件通知父组件的事件作为 `addItem()` 的参数。
+
+`$event` 包含用户在子模板 UI 中键入到 `<input>` 中的数据。
+
+#### `@Input()` 和 `@Output()` 在一起
+
+```
+<app-input-output [item]="currentItem" (deleteRequest)="crossOffItem($event)"></app-input-output>
+```
+
+目标 `item` 是子组件类中的 `@Input()` 属性，它从父组件的属性 `currentItem` 中接收值。当你单击删除时，子组件将引发事件 `deleteRequest`，它携带的值将作为父组件的 `crossOffItem()` 方法的参数。
+
+#### `@Input()` 和 `@Output()` 声明
+
+还可以在指令元数据的 `inputs` 和 `outputs` 数组中标出这些成员，而不是使用 `@Input()` 和 `@Output()` 装饰器来声明输入和输出。
+
+```
+// tslint:disable: no-inputs-metadata-property no-outputs-metadata-property
+inputs: ['clearanceItem'],
+outputs: ['buyEvent']
+// tslint:enable: no-inputs-metadata-property no-outputs-metadata-property
+```
+
+#### 为输入和输出指定别名
+
+##### 元数据中的别名
+
+要在元数据中为输入和输出指定别名，使用冒号分隔`（:）`的字符串，其左边是属性名，右边是别名：
+
+```
+// tslint:disable: no-inputs-metadata-property no-outputs-metadata-property
+inputs: ['input1: saveForLaterItem'], // propertyName:alias
+outputs: ['outputEvent1: saveForLaterEvent']
+// tslint:disable: no-inputs-metadata-property no-outputs-metadata-property
+```
+
+##### 使用 `@Input()` / `@Output()` 装饰器指定别名
+
+可以通过将别名传给 `@Input()` / `@Output()` 装饰器来为属性名指定别名。其内部名称保持不变。
+
+```
+@Input('wishListItem') input2: string; //  @Input(alias)
+@Output('wishEvent') outputEvent2 = new EventEmitter<string>(); //  @Output(alias) propertyName = ...
+```
+
+#### 模板表达式中的运算符
+
+* 管道
+* 安全导航运算符
+* 非空断言运算符
+
+##### 管道运算符（ `|` ）
+
+管道是简单的函数，它们接受输入值并返回转换后的值。使用管道运算符（`|`）。还可以通过多个管道串联表达式。
+
+`json` 管道对调试绑定特别有用：
+
+```
+<p>Item json pipe: {{item | json}}</p>
+```
+
+生成的输出如下所示：
+
+```
+{ "name": "Telephone",
+  "manufactureDate": "1980-02-25T05:00:00.000Z",
+  "price": 98 
+}
+```
+
+> 管道运算符的优先级比三元运算符（ ?: ）高，这意味着 a ? b : c | x 将被解析为 a ? b : (c | x)。
+
+##### 安全导航运算符（ `?` ）和空属性路径
+
+安全导航运算符 `?` 可以对在属性路径中出现 null 和 undefined 值进行保护。
+
+```
+<p>The item name is: {{item?.name}}</p>
+```
+
+没有安全导航运算符，并且 `item` 为 `null`，会引发空指针错误并中断的渲染过程。
+
+##### 非空断言运算符（`!`）
+
+#### 内置模板函数
+
+##### 类型转换函数 `$any()`
+
+#### 模板中的 SVG
+
+可以将 SVG 用作 Angular 中的有效模板。
+
+当你使用 SVG 作为模板时，就可以像 HTML 模板一样使用指令和绑定。意味着能够动态生成交互式图形。
+
+### user-input // to-do
+
+
 
