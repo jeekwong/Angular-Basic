@@ -733,7 +733,15 @@ private highlight(color: string) {
  * `color` 属性位于右侧的绑定表达式中，它属于模板所在的组件。 该模板和组件相互信任。因此 `color` 不需要 `@Input` 装饰器。
  * `appHighlight` 属性位于左侧，它引用了 `HighlightDirective` 中一个带别名的属性，它不是模板所属组件的一部分，因此存在信任问题。 所以，该属性必须带 `@Input` 装饰器。
 
- 
+ ### 结构型指令
+
+ `todo`
+
+
+### 管道
+
+`todo`
+
 
 
 
