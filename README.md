@@ -666,6 +666,75 @@ export class HighlightDirective {
 
 `ElementRef` 通过其 `nativeElement` 属性给你了直接访问`宿主 DOM 元素`的能力。
 
+#### 使用属性型指令
+
+```
+<p appHighlight>Highlight me!</p>
+```
+
+#### 响应用户引发的事件
+
+使用 `HostListener` 装饰器添加两个事件处理器，会在鼠标进入或离开时进行响应。
+
+```
+@HostListener('mouseenter') onMouseEnter() {
+  this.highlight('yellow');
+}
+
+@HostListener('mouseleave') onMouseLeave() {
+  this.highlight(null);
+}
+
+private highlight(color: string) {
+  this.el.nativeElement.style.backgroundColor = color;
+}
+```
+
+#### 使用 `@Input` 数据绑定向指令传递值
+
+```
+@Input() highlightColor: string;
+```
+
+##### 绑定到 `@Input` 属性
+
+```
+<p appHighlight highlightColor="yellow">Highlighted in yellow</p>
+<p appHighlight [highlightColor]="'orange'">Highlighted in orange</p>
+```
+
+##### 绑定到 `@Input` 别名
+
+```
+@Input('appHighlight') highlightColor: string;
+```
+
+在指令内部，该属性叫 `highlightColor`，在外部，你绑定到它地方，它叫 `appHighlight`。
+
+#### 为什么要加`@Input`？
+
+`@Input` 装饰器都告诉 Angular，该属性是`公共`的，并且能被父组件绑定。 如果没有 `@Input`，Angular 就会拒绝绑定到该属性。
+
+ Angular 把组件的模板看做从属于该组件的。 组件和它的模板默认会相互信任。 意味着组件自己的模板可以绑定到组件的任意属性，无论是否使用了 `@Input` 装饰器。
+
+ 但组件或指令不应该盲目的信任其它组件或指令。 因此组件或指令的属性默认是不能被绑定的。 
+
+ 从 Angular 绑定机制的角度来看，它们是`私有`的，而当添加了 `@Input` 时，Angular 绑定机制才会把它们当成公共的。 只有这样，它们才能被其它组件或属性绑定。
+
+ 可以根据属性名在绑定中出现的位置来判定是否要加 `@Input`:
+
+ * 当它出现在等号右侧的模板表达式中时，它属于模板所在的组件，不需要 `@Input` 装饰器。
+ * 当它出现在等号左边的方括号（`[ ]`）中时，该属性属于其它组件或指令，它必须带有 `@Input` 装饰器。
+
+ ```
+ <p [appHighlight]="color">Highlight me!</p>
+ ```
+
+ * `color` 属性位于右侧的绑定表达式中，它属于模板所在的组件。 该模板和组件相互信任。因此 `color` 不需要 `@Input` 装饰器。
+ * `appHighlight` 属性位于左侧，它引用了 `HighlightDirective` 中一个带别名的属性，它不是模板所属组件的一部分，因此存在信任问题。 所以，该属性必须带 `@Input` 装饰器。
+
+ 
+
 
 
 
