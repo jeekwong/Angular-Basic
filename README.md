@@ -629,6 +629,44 @@ Angular 在 `$event` 变量提供一个相应的 `DOM 事件对象`。`$event` �
 
 保持模板语句简单 — `(blur)` 事件被绑定到两个 JavaScript 语句。 第一句调用 `addHero`。第二句 `newHero.value=''` 在添加新英雄到列表中后清除输入框。
 
+### 属性型指令
+
+属性型指令用于改变一个 DOM 元素的外观或行为。
+
+#### 指令概览
+
+* 组件 — 拥有模板的指令
+* 结构型指令 — 通过添加和移除 DOM 元素改变 DOM 布局的指令
+* 属性型指令 — 改变元素、组件或其它指令的外观和行为的指令
+
+属性型指令至少需要一个带有 `@Directive` 装饰器的控制器类。
+
+```
+ng generate directive highlight
+```
+
+这里导入的 `Directive` 符号提供了 Angular 的 `@Directive` 装饰器。
+
+```
+import { Directive } from '@angular/core';
+
+@Directive({
+  selector: '[appHighlight]'
+})
+export class HighlightDirective {
+  constructor() { }
+}
+```
+
+方括号(`[]`)表示它的属性型选择器。 Angular 会在模板中定位每个拥有名叫 `appHighlight` 属性的元素，并且为这些元素加上本指令的逻辑。
+
+紧跟在 `@Directive` 元数据之后的就是该指令的`控制器类`，名叫 `HighlightDirective`，它包含了该指令的逻辑（目前为空逻辑）。
+
+在指令的构造函数中使用 `ElementRef` 来注入`宿主 DOM 元素`的引用，也就是你放置 `appHighlight` 的那个元素。
+
+`ElementRef` 通过其 `nativeElement` 属性给你了直接访问`宿主 DOM 元素`的能力。
+
+
 
 
 
