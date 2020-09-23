@@ -18,4 +18,9 @@ export class AppComponent {
     }
   }
 
+  birthday = new Date(1990, 1, 5);
+
+  power = 5;
+  factor = 1;
+
 }

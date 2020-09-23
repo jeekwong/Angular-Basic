@@ -25,8 +25,31 @@
 <p *ngIf="true">
     Expression is true and ngIf is true.
     This paragraph is in the DOM.
-  </p>
-  <p *ngIf="false">
+</p>
+<p *ngIf="false">
     Expression is false and ngIf is false.
     This paragraph is not in the DOM.
-  </p>
+</p>
+
+<p>The hero's birthday is {{ birthday | date:'fullDate' }}</p>
+
+<h2>Power Boost Calculator</h2>
+<div>Normal power: <input [(ngModel)]="power"></div>
+<div>Boost factor: <input [(ngModel)]="factor"></div>
+<p>
+    Super Hero Power: {{power | exponentialStrength: factor}}
+</p>
+
+<app-flying-heroes></app-flying-heroes>
+
+<app-hero-async-message></app-hero-async-message>
+
+<h2>Heroes from JSON File</h2>
+
+<div *ngFor="let hero of ('assets/heroes.json' | fetch) ">
+    {{hero.name}}
+</div>
+
+<p>Heroes as JSON:
+    {{'assets/heroes.json' | fetch | json}}
+</p>
