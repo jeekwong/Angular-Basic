@@ -1,4 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { AdItem } from './ad-banner/ad-item';
+import { AdService } from './ad-banner/ad.service';
 import { Hero } from './hero';
 
 @Component({
@@ -6,7 +8,7 @@ import { Hero } from './hero';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
   title = 'Tour of Heroes';
   heroes = ['Windstorm', 'Bombasto', 'Magneta', 'Tornado'];
 
@@ -23,4 +25,11 @@ export class AppComponent {
   power = 5;
   factor = 1;
 
+  ads: AdItem[];
+
+  constructor(private adService: AdService) {}
+
+  ngOnInit() {
+    this.ads = this.adService.getAds();
+  }
 }

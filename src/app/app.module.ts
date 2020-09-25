@@ -11,6 +11,12 @@ import { FlyingHeroesPipe } from './flying-heroes.pipe';
 import { HeroAsyncMessageComponent } from './hero-async-message/hero-async-message.component';
 import { FetchJsonPipe } from './fetch-json.pipe';
 
+import { AdService } from './ad-banner/ad.service';
+import { AdDirective } from './ad.directive';
+import { AdBannerComponent } from './ad-banner/ad-banner.component';
+import { HeroJobAdComponent } from './ad-banner/hero-job-ad.component';
+import { HeroProfileComponent } from './ad-banner/hero-profile.component';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -19,14 +25,19 @@ import { FetchJsonPipe } from './fetch-json.pipe';
     FlyingHeroesComponent,
     FlyingHeroesPipe,
     HeroAsyncMessageComponent,
-    FetchJsonPipe
+    FetchJsonPipe,
+    AdDirective,
+    AdBannerComponent,
+    HeroJobAdComponent,
+    HeroProfileComponent,
   ],
   imports: [
     BrowserModule,
     FormsModule,
     HttpClientModule,
   ],
-  providers: [],
+  providers: [AdService],
+  entryComponents: [ HeroJobAdComponent, HeroProfileComponent ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
